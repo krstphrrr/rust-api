@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  rustapp:
+    container_name: rustapp
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DATABASE_URL: postgres://postgres:postgres@rustdb:5432/postgres
+    ports:
+      - '8083:8083'
+    depends_on:
+      - db
+    networks:
+      - apache-file-server_default
+
+
+  rustdb:
+    container_name: rustdb
+    image: 'postgres:12'
+    ports:
+      - '5434:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - apache-file-server_default
+
+networks:
+  apache-file-server_default:
+    name: apache-file-server_default
+    external: true
+
+volumes:
+  pgdata: {}
